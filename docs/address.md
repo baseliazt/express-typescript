@@ -15,6 +15,7 @@ Request Body
   "street": "street",
   "city": "city",
   "province": "province",
+  "country": "country",
   "postal_code": "12345"
 }
 ```
@@ -28,6 +29,7 @@ Response Body (Success)
     "street": "street",
     "city": "city",
     "province": "province",
+    "country": "country",
     "postal_code": "12345"
   }
 }
@@ -58,6 +60,7 @@ Response Body (Success)
     "street": "street",
     "city": "city",
     "province": "province",
+    "country": "country",
     "postal_code": "12345"
   }
 }
@@ -86,6 +89,7 @@ Request Body
   "street": "street",
   "city": "city",
   "province": "province",
+  "country": "country",
   "postal_code": "12345"
 }
 ```
@@ -99,6 +103,7 @@ Response Body (Success)
     "street": "street",
     "city": "city",
     "province": "province",
+    "country": "country",
     "postal_code": "12345"
   }
 }
@@ -154,6 +159,7 @@ Response Body (Success)
       "street": "street",
       "city": "city",
       "province": "province",
+      "country": "country",
       "postal_code": "12345"
     }
   ]
