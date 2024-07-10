@@ -6,12 +6,14 @@ import {
   CreateUserRequest,
   LoginUserRequest,
   toUserResponse,
+  UpdateUserRequest,
   UserResponse,
 } from "../model";
 import { UserValidation } from "../validation";
 import { Validation } from "../validation/validation";
 import bcrypt from "bcrypt";
 import { v4 as uuidV4 } from "uuid";
+import { UserRequest } from "../type";
 
 export class UserService {
   static async register(request: CreateUserRequest): Promise<UserResponse> {
@@ -77,5 +79,32 @@ export class UserService {
 
   static async get(user: User): Promise<UserResponse> {
     return toUserResponse(user);
+  }
+
+  static async update(
+    user: User,
+    request: UpdateUserRequest
+  ): Promise<UserResponse> {
+    const updateRequest = Validation.validate(UserValidation.UPDATE, request);
+
+    if (updateRequest.name) {
+      user.name = updateRequest.name;
+    }
+
+    if (updateRequest.password) {
+      user.password = await bcrypt.hash(updateRequest.password, 10);
+    }
+
+    const response = await prismaClient.user.update({
+      where: {
+        username: user.username,
+      },
+      data: {
+        name: user.name,
+        password: user.password,
+      },
+    });
+
+    return toUserResponse(response);
   }
 }

@@ -38,4 +38,16 @@ export class UserController {
       next(e);
     }
   }
+
+  static async update(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const updateRequest = req.body;
+      const response = await UserService.update(req.user!, updateRequest);
+      res.status(200).json({
+        data: response,
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
 }
