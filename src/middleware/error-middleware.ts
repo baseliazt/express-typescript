@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { ZodError } from "zod";
 import { ResponseError } from "../error";
+import { logger } from "../application/logging";
 
 export const errorMiddleware = async (
   error: Error,
@@ -8,6 +9,9 @@ export const errorMiddleware = async (
   res: Response,
   next: NextFunction
 ) => {
+  const test = error instanceof ZodError;
+  const test2 = error instanceof ResponseError;
+  logger.info("zoderror", test, test2);
   if (error instanceof ZodError) {
     res.status(400).json({
       errors: `Validation Error : ${JSON.stringify(error)}`,
