@@ -15,6 +15,10 @@ export type CreateContactRequest = {
   phone?: string | null;
 };
 
+export type GetContactRequest = {
+  contactId: number;
+};
+
 export function toContactResponse(contact: Contact): ContactResponse {
   return {
     id: contact.id,

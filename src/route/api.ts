@@ -10,3 +10,4 @@ apiRouter.put("/api/users", UserController.update);
 apiRouter.delete("/api/users", UserController.logout);
 
 apiRouter.post("/api/contacts", ContactController.create);
+apiRouter.get("/api/contacts/:contactId", ContactController.get);
