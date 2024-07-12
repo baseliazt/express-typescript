@@ -13,6 +13,8 @@ import { UserValidation } from "../validation";
 import { Validation } from "../validation/validation";
 import bcrypt from "bcrypt";
 import { v4 as uuidV4 } from "uuid";
+import jwt from "jsonwebtoken";
+import { logger } from "../application/logging";
 
 export class UserService {
   static async register(request: CreateUserRequest): Promise<UserResponse> {
@@ -62,17 +64,15 @@ export class UserService {
       throw new ResponseError(401, "Username or password is wrong");
     }
 
-    user = await prismaClient.user.update({
-      where: {
-        username: loginRequest.username,
-      },
-      data: {
-        token: uuidV4(),
-      },
+    const secretKey = process.env.JWT_SECRET_KEY ?? "";
+
+    const token = await jwt.sign(user, secretKey, {
+      expiresIn: "1m",
     });
+    logger.info(`token: ${token.length}`);
 
     const response = toUserResponse(user);
-    response.token = user.token!;
+    response.token = token;
     return response;
   }
 
@@ -108,16 +108,16 @@ export class UserService {
   }
 
   static async logout(user: User): Promise<UserResponse> {
-    const response = await prismaClient.user.update({
+    const logoutUser = await prismaClient.user.findFirst({
       where: {
         username: user.username,
       },
-      data: {
-        token: null,
-      },
     });
+    if (!logoutUser) {
+      throw new ResponseError(404, "User Not Found");
+    }
 
-    return toUserResponse(response);
+    return toUserResponse(logoutUser);
   }
 
   static async delete(req: DeleteUserRequest): Promise<UserResponse> {
