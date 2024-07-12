@@ -3,6 +3,7 @@ import { prismaClient } from "../application/database";
 import { ResponseError } from "../error";
 import {
   CreateUserRequest,
+  DeleteUserRequest,
   LoginUserRequest,
   toUserResponse,
   UpdateUserRequest,
@@ -113,6 +114,16 @@ export class UserService {
       },
       data: {
         token: null,
+      },
+    });
+
+    return toUserResponse(response);
+  }
+
+  static async delete(req: DeleteUserRequest): Promise<UserResponse> {
+    const response = await prismaClient.user.delete({
+      where: {
+        username: req.username,
       },
     });
 

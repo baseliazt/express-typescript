@@ -22,6 +22,10 @@ export type UpdateUserRequest = {
   password?: string;
 };
 
+export type DeleteUserRequest = {
+  username: string;
+};
+
 export type LogoutUserRequest = {};
 
 export function toUserResponse(user: User): UserResponse {

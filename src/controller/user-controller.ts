@@ -1,5 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { CreateUserRequest, LoginUserRequest } from "../model";
+import {
+  CreateUserRequest,
+  DeleteUserRequest,
+  LoginUserRequest,
+} from "../model";
 import { UserService } from "../service";
 import { UserRequest } from "../type";
 
@@ -54,6 +58,20 @@ export class UserController {
   static async logout(req: UserRequest, res: Response, next: NextFunction) {
     try {
       const response = await UserService.logout(req.user!);
+      res.status(200).json({
+        data: response,
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  static async delete(req: UserRequest, res: Response, next: NextFunction) {
+    const deleteRequest: DeleteUserRequest = {
+      username: req.params.username,
+    };
+    try {
+      const response = await UserService.delete(deleteRequest);
       res.status(200).json({
         data: response,
       });
