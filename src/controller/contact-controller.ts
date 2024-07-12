@@ -8,7 +8,6 @@ import {
 import { ContactService } from "../service";
 import { User } from "@prisma/client";
 import { UserRequest } from "../type";
-import { logger } from "../application/logging";
 
 export class ContactController {
   static async create(req: UserRequest, res: Response, next: NextFunction) {
