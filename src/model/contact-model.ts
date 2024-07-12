@@ -15,8 +15,6 @@ export type CreateContactRequest = {
   phone?: string | null;
 };
 
-
-
 export type GetContactRequest = {
   contactId: number;
 };
@@ -27,6 +25,10 @@ export type UpdateContactRequest = {
   last_name?: string | null;
   email?: string | null;
   phone?: string | null;
+};
+
+export type DeleteContactRequest = {
+  contactId: number;
 };
 
 export function toContactResponse(contact: Contact): ContactResponse {

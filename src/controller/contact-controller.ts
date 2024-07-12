@@ -1,6 +1,7 @@
 import { Response, NextFunction } from "express";
 import {
   CreateContactRequest,
+  DeleteContactRequest,
   GetContactRequest,
   UpdateContactRequest,
 } from "../model";
@@ -45,10 +46,27 @@ export class ContactController {
         ...req.body,
         contactId: Number(req.params?.contactId),
       };
-      logger.debug("request.body", request);
+
       const user = req.user!;
 
       const response = await ContactService.update(user, request);
+      res.status(200).json({
+        data: response,
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  static async delete(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const request: DeleteContactRequest = {
+        contactId: Number(req.params?.contactId),
+      };
+
+      const user = req.user!;
+
+      const response = await ContactService.delete(user, request);
       res.status(200).json({
         data: response,
       });

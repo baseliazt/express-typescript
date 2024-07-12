@@ -102,4 +102,28 @@ export class ContactService {
 
     return toContactResponse(response);
   }
+  static async delete(
+    user: User,
+    request: GetContactRequest
+  ): Promise<ContactResponse> {
+    const getRequest = request;
+    const contact = await prismaClient.contact.findFirst({
+      where: {
+        id: getRequest.contactId,
+        username: user.username,
+      },
+    });
+
+    if (!contact) {
+      throw new ResponseError(404, "Contact Not Found");
+    }
+
+    const response = await prismaClient.contact.delete({
+      where: {
+        id: getRequest.contactId,
+      },
+    });
+
+    return toContactResponse(response);
+  }
 }
