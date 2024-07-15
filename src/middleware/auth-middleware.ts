@@ -9,7 +9,15 @@ export const authMiddleware = async (
   res: Response,
   next: NextFunction
 ) => {
-  const token = req.get("X-API-TOKEN");
+  const bearerToken = req.get("Authorization");
+  if (!bearerToken) {
+    res.status(401).json({
+      errors: "Unauthorized",
+    });
+    return;
+  }
+  logger.info(`bearer ${bearerToken}`);
+  const token = bearerToken.replace("Bearer ", "");
 
   if (token) {
     const user = await prismaClient.user.findFirst({
@@ -34,9 +42,11 @@ export const authMiddleware = async (
       res.status(401).json({
         errors: "Unauthorized",
       });
+      return;
     }
   }
   res.status(401).json({
     errors: "Unauthorized",
   });
+  return;
 };
