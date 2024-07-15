@@ -15,6 +15,7 @@ import bcrypt from "bcrypt";
 import { v4 as uuidV4 } from "uuid";
 import jwt from "jsonwebtoken";
 import { logger } from "../application/logging";
+import { setTokenPayload, UserToken } from "../type";
 
 export class UserService {
   static async register(request: CreateUserRequest): Promise<UserResponse> {
@@ -66,13 +67,26 @@ export class UserService {
 
     const secretKey = process.env.JWT_SECRET_KEY ?? "";
 
-    const token = await jwt.sign(user, secretKey, {
-      expiresIn: "1m",
+    const token = await jwt.sign(
+      setTokenPayload({ username: user.username }),
+      secretKey,
+      {
+        expiresIn: "1m",
+      }
+    );
+
+    user = await prismaClient.user.update({
+      where: {
+        username: user.username,
+      },
+      data: {
+        token,
+      },
     });
-    logger.info(`token: ${token.length}`);
 
     const response = toUserResponse(user);
     response.token = token;
+
     return response;
   }
 
@@ -117,7 +131,16 @@ export class UserService {
       throw new ResponseError(404, "User Not Found");
     }
 
-    return toUserResponse(logoutUser);
+    const response = await prismaClient.user.update({
+      where: {
+        username: user.username,
+      },
+      data: {
+        token: null,
+      },
+    });
+
+    return toUserResponse(response);
   }
 
   static async delete(req: DeleteUserRequest): Promise<UserResponse> {
