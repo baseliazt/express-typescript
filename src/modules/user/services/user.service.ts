@@ -176,6 +176,7 @@ export class UserService {
       } else {
         const response = toUserResponse(user);
         response.token = newToken;
+        response.refreshToken = user?.token ?? "";
         return response;
       }
     } catch (err) {
