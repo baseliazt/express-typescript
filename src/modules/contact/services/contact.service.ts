@@ -1,15 +1,15 @@
 import { User } from "@prisma/client";
-import { prismaClient } from "../application/database";
+import { prismaClient } from "../../../application/database";
 import {
   ContactResponse,
   CreateContactRequest,
   GetContactRequest,
   toContactResponse,
   UpdateContactRequest,
-} from "../model";
-import { ContactValidation } from "../validation";
-import { Validation } from "../validation/validation";
-import { ResponseError } from "../error";
+} from "../models";
+import { ContactValidation } from "../../../validation";
+import { Validation } from "../../../validation/validation";
+import { ResponseError } from "../../../error";
 
 export class ContactService {
   static async create(

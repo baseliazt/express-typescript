@@ -4,10 +4,10 @@ import {
   DeleteContactRequest,
   GetContactRequest,
   UpdateContactRequest,
-} from "../model";
-import { ContactService } from "../service";
+} from "../models";
+import { ContactService } from "../services";
 import { User } from "@prisma/client";
-import { UserRequest } from "../type";
+import { UserRequest } from "../../../type";
 
 export class ContactController {
   static async create(req: UserRequest, res: Response, next: NextFunction) {

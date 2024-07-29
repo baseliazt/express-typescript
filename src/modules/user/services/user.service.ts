@@ -1,6 +1,6 @@
 import { User } from "@prisma/client";
-import { prismaClient } from "../application/database";
-import { ResponseError } from "../error";
+import { prismaClient } from "../../../application/database";
+import { ResponseError } from "../../../error";
 import {
   CreateUserRequest,
   DeleteUserRequest,
@@ -9,12 +9,12 @@ import {
   toUserResponse,
   UpdateUserRequest,
   UserResponse,
-} from "../model";
-import { UserValidation } from "../validation";
-import { Validation } from "../validation/validation";
+} from "../models";
+import { UserValidation } from "../../../validation";
+import { Validation } from "../../../validation/validation";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { setTokenPayload, UserRequest } from "../type";
+import { setTokenPayload, UserRequest } from "../../../type";
 
 export class UserService {
   static async register(request: CreateUserRequest): Promise<UserResponse> {

@@ -3,9 +3,9 @@ import {
   CreateUserRequest,
   DeleteUserRequest,
   LoginUserRequest,
-} from "../model";
-import { UserService } from "../service";
-import { UserRequest } from "../type";
+} from "../models";
+import { UserRequest } from "../../../type";
+import { UserService } from "../services";
 
 export class UserController {
   static async register(req: Request, res: Response, next: NextFunction) {
