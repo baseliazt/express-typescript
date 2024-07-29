@@ -1,8 +1,7 @@
 import { Response, NextFunction } from "express";
 import { prismaClient } from "../application/database";
 import { UserRequest } from "../type";
-import jwt from "jsonwebtoken";
-import { JWTUser } from "../type";
+import { verifyAccessToken } from "../utils/jwt";
 
 export const authMiddleware = async (
   req: UserRequest,
@@ -27,9 +26,8 @@ export const authMiddleware = async (
 
   if (token) {
     let username: string = "";
-    const secretKey = process.env.JWT_SECRET_KEY_TOKEN ?? "";
     try {
-      const jwtUser = (await jwt.verify(token, secretKey)) as JWTUser;
+      const jwtUser = await verifyAccessToken({ token: token });
       username = jwtUser.username;
     } catch (err) {
       return res.status(401).json({
@@ -43,7 +41,7 @@ export const authMiddleware = async (
           username: username,
         },
       });
-      console.log("ini user", user);
+
       if (user) {
         req.user = user;
         next();

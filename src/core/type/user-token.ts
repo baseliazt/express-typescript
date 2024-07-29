@@ -8,11 +8,3 @@ export interface UserToken {
 export type JWTUser = jwt.JwtPayload & {
   username: string;
 };
-
-export const setTokenPayload: (data: UserToken) => UserToken = (
-  data: UserToken
-) => {
-  return {
-    username: data.username,
-  };
-};

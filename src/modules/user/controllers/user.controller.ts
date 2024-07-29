@@ -3,6 +3,7 @@ import {
   CreateUserRequest,
   DeleteUserRequest,
   LoginUserRequest,
+  RefreshTokenUserRequest,
 } from "../models";
 import { UserRequest } from "../../../core/type";
 import { UserService } from "../services";
@@ -72,6 +73,20 @@ export class UserController {
     };
     try {
       const response = await UserService.delete(deleteRequest);
+      res.status(200).json({
+        data: response,
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  static async refreshToken(req: Request, res: Response, next: NextFunction) {
+    const deleteRequest: RefreshTokenUserRequest = {
+      refresh_token: String(req.headers["refresh-token"] ?? ""),
+    };
+    try {
+      const response = await UserService.refreshToken(deleteRequest);
       res.status(200).json({
         data: response,
       });

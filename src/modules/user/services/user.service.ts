@@ -14,7 +14,12 @@ import { UserValidation } from "../validations";
 import { Validation } from "../../../core/validation/validation";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { setTokenPayload, UserRequest } from "../../../core/type";
+import {
+  generateAccessRefreshToken,
+  generateAccessToken,
+  verifyAccessRefreshToken,
+} from "../../../core/utils/jwt";
+import { JWTUser } from "../../../core/type";
 
 export class UserService {
   static async register(request: CreateUserRequest): Promise<UserResponse> {
@@ -64,23 +69,11 @@ export class UserService {
       throw new ResponseError(401, "Username or password is wrong");
     }
 
-    const secretKey = process.env.JWT_SECRET_KEY_TOKEN ?? "";
+    const token = await generateAccessToken({ username: user.username });
 
-    const token = await jwt.sign(
-      setTokenPayload({ username: user.username }),
-      secretKey,
-      {
-        expiresIn: "1h",
-      }
-    );
-
-    const refreshToken = await jwt.sign(
-      setTokenPayload({ username: user.username }),
-      secretKey,
-      {
-        expiresIn: "7d",
-      }
-    );
+    const refreshToken = await generateAccessRefreshToken({
+      username: user.username,
+    });
 
     user = await prismaClient.user.update({
       where: {
@@ -163,30 +156,28 @@ export class UserService {
   }
 
   static async refreshToken(
-    user: User,
     req: RefreshTokenUserRequest
   ): Promise<UserResponse> {
-    const secretKey = process.env.JWT_SECRET_KEY_TOKEN ?? "";
     try {
-      await jwt.verify(req.refresh_token, secretKey);
-      const token = await jwt.sign(
-        setTokenPayload({ username: user.username }),
-        secretKey,
-        {
-          expiresIn: "1d",
-        }
-      );
+      const verifyJWTUser = (await verifyAccessRefreshToken({
+        token: req.refresh_token,
+      })) as JWTUser;
+      const newToken = await generateAccessToken({
+        username: verifyJWTUser.username,
+      });
 
-      const response = await prismaClient.user.update({
+      const user = await prismaClient.user.findUnique({
         where: {
-          username: user.username,
-        },
-        data: {
-          ...user,
-          token: token,
+          username: verifyJWTUser.username,
         },
       });
-      return toUserResponse(response);
+      if (!user) {
+        throw new ResponseError(401, "Unauthorized");
+      } else {
+        const response = toUserResponse(user);
+        response.token = newToken;
+        return response;
+      }
     } catch (err) {
       throw new ResponseError(401, "Unauthorized");
     }
