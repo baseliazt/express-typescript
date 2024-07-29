@@ -1,4 +1,5 @@
 import { User } from "@prisma/client";
+import { PaginationResponse } from "../../../core/type";
 
 export type UserResponse = {
   username: string;
@@ -29,6 +30,17 @@ export type DeleteUserRequest = {
 
 export type RefreshTokenUserRequest = {
   refresh_token: string;
+};
+
+export type SearchUserRequest = {
+  limit?: number;
+  offset?: number;
+  name?: string;
+};
+
+export type SearchUserResponse = {
+  data: UserResponse[];
+  pagination: PaginationResponse;
 };
 
 export type LogoutUserRequest = {};

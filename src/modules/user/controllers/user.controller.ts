@@ -4,6 +4,7 @@ import {
   DeleteUserRequest,
   LoginUserRequest,
   RefreshTokenUserRequest,
+  SearchUserRequest,
 } from "../models";
 import { UserRequest } from "../../../core/type";
 import { UserService } from "../services";
@@ -90,6 +91,33 @@ export class UserController {
       res.status(200).json({
         data: response,
       });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  static async search(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      let searchRequest: SearchUserRequest = {};
+
+      const limit = req.query.limit;
+      const offset = req.query.offset;
+      if (limit) {
+        searchRequest = {
+          ...searchRequest,
+          limit: parseInt(String(limit)),
+        };
+      }
+
+      if (offset) {
+        searchRequest = {
+          ...searchRequest,
+          offset: parseInt(String(offset)),
+        };
+      }
+
+      const response = await UserService.search(searchRequest);
+      res.status(200).json(response);
     } catch (e) {
       next(e);
     }

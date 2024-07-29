@@ -11,6 +11,7 @@ apiRouter.get("/api/users/current", UserController.get);
 apiRouter.patch("/api/users", UserController.update);
 apiRouter.delete("/api/users/logout", UserController.logout);
 apiRouter.delete("/api/users/:username", UserController.delete);
+apiRouter.get("/api/users/search", UserController.search);
 
 apiRouter.post("/api/contacts", ContactController.create);
 apiRouter.get("/api/contacts/:contactId", ContactController.get);

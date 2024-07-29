@@ -6,6 +6,8 @@ import {
   DeleteUserRequest,
   LoginUserRequest,
   RefreshTokenUserRequest,
+  SearchUserRequest,
+  SearchUserResponse,
   toUserResponse,
   UpdateUserRequest,
   UserResponse,
@@ -13,13 +15,12 @@ import {
 import { UserValidation } from "../validations";
 import { Validation } from "../../../core/validation/validation";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import {
   generateAccessRefreshToken,
   generateAccessToken,
   verifyAccessRefreshToken,
 } from "../../../core/utils/jwt";
-import { JWTUser } from "../../../core/type";
+import { JWTUser, PaginationResponse } from "../../../core/type";
 
 export class UserService {
   static async register(request: CreateUserRequest): Promise<UserResponse> {
@@ -182,5 +183,38 @@ export class UserService {
     } catch (err) {
       throw new ResponseError(401, "Unauthorized");
     }
+  }
+
+  static async search(req: SearchUserRequest): Promise<SearchUserResponse> {
+    const searchRequest = req;
+    const DEFAULT_LIMIT = 10;
+    const DEFAULT_OFFSET = 0;
+    const limit = searchRequest.limit ?? DEFAULT_LIMIT;
+    const offset = searchRequest.offset ?? DEFAULT_OFFSET;
+
+    const users = await prismaClient.user.findMany({
+      take: limit,
+      skip: offset,
+    });
+
+    const count = await prismaClient.user.count();
+
+    const dataResponse = users.map((user) => {
+      return toUserResponse(user);
+    });
+
+    const totalPage = Math.ceil(count / limit);
+    const currentPage = offset / limit + 1;
+
+    const paginationResponse: PaginationResponse = {
+      total_page: totalPage,
+      current_page: currentPage,
+      limit: limit,
+      offset: offset,
+    };
+    return {
+      data: dataResponse,
+      pagination: paginationResponse,
+    };
   }
 }
