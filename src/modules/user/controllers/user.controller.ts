@@ -4,7 +4,7 @@ import {
   DeleteUserRequest,
   LoginUserRequest,
 } from "../models";
-import { UserRequest } from "../../../type";
+import { UserRequest } from "../../../core/type";
 import { UserService } from "../services";
 
 export class UserController {

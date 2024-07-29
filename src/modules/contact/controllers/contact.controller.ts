@@ -7,7 +7,7 @@ import {
 } from "../models";
 import { ContactService } from "../services";
 import { User } from "@prisma/client";
-import { UserRequest } from "../../../type";
+import { UserRequest } from "../../../core/type";
 
 export class ContactController {
   static async create(req: UserRequest, res: Response, next: NextFunction) {

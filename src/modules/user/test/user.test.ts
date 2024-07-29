@@ -1,6 +1,6 @@
 import supertest from "supertest";
-import { web } from "../application/web";
-import { logger } from "../application/logging";
+import { web } from "../../../core/application/web";
+import { logger } from "../../../core/application/logging";
 import { UserTest } from "./test.util";
 
 // describe("POST /api/users", () => {

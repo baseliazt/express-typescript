@@ -1,4 +1,4 @@
-import { prismaClient } from "../application/database";
+import { prismaClient } from "../../../core/application/database";
 import bcrypt from "bcrypt";
 
 export class UserTest {
