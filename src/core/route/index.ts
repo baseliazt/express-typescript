@@ -1,2 +1,2 @@
-export * from "./public-api";
-export * from "./api";
+export * from "./public";
+export * from "./private";
