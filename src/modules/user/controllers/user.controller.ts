@@ -102,6 +102,7 @@ export class UserController {
 
       const limit = req.query.limit;
       const offset = req.query.offset;
+      const name = req.query.name;
       if (limit) {
         searchRequest = {
           ...searchRequest,
@@ -113,6 +114,13 @@ export class UserController {
         searchRequest = {
           ...searchRequest,
           offset: parseInt(String(offset)),
+        };
+      }
+
+      if (name) {
+        searchRequest = {
+          ...searchRequest,
+          name: String(name),
         };
       }
 

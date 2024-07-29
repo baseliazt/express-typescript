@@ -189,22 +189,35 @@ export class UserService {
     const searchRequest = req;
     const DEFAULT_LIMIT = 10;
     const DEFAULT_OFFSET = 0;
+
     const limit = searchRequest.limit ?? DEFAULT_LIMIT;
     const offset = searchRequest.offset ?? DEFAULT_OFFSET;
 
+    let filters = {};
+
+    if (searchRequest.name) {
+      filters = {
+        ...filters,
+        name: searchRequest.name,
+      };
+    }
+
     const users = await prismaClient.user.findMany({
+      where: filters,
       take: limit,
       skip: offset,
     });
 
-    const count = await prismaClient.user.count();
+    const count = await prismaClient.user.count({
+      where: filters,
+    });
 
     const dataResponse = users.map((user) => {
       return toUserResponse(user);
     });
 
     const totalPage = Math.ceil(count / limit);
-    const currentPage = offset / limit + 1;
+    const currentPage = count === 0 ? 0 : offset / limit + 1;
 
     const paginationResponse: PaginationResponse = {
       total_page: totalPage,
@@ -212,6 +225,7 @@ export class UserService {
       limit: limit,
       offset: offset,
     };
+
     return {
       data: dataResponse,
       pagination: paginationResponse,
