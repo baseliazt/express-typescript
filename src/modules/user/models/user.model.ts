@@ -1,5 +1,5 @@
 import { User } from "@prisma/client";
-import { PaginationResponse } from "../../../core/type";
+import { PaginationResponse } from "../../../core/utils/pagination";
 
 export type UserResponse = {
   username: string;

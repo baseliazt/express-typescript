@@ -20,7 +20,12 @@ import {
   generateAccessToken,
   verifyAccessRefreshToken,
 } from "../../../core/utils/jwt";
-import { JWTUser, PaginationResponse } from "../../../core/type";
+import { JWTUser } from "../../../core/type";
+import {
+  DEFAULT_LIMIT,
+  DEFAULT_OFFSET,
+  toPaginationResponse,
+} from "../../../core/utils/pagination";
 
 export class UserService {
   static async register(request: CreateUserRequest): Promise<UserResponse> {
@@ -187,8 +192,6 @@ export class UserService {
 
   static async search(req: SearchUserRequest): Promise<SearchUserResponse> {
     const searchRequest = req;
-    const DEFAULT_LIMIT = 10;
-    const DEFAULT_OFFSET = 0;
 
     const limit = searchRequest.limit ?? DEFAULT_LIMIT;
     const offset = searchRequest.offset ?? DEFAULT_OFFSET;
@@ -216,15 +219,11 @@ export class UserService {
       return toUserResponse(user);
     });
 
-    const totalPage = Math.ceil(count / limit);
-    const currentPage = count === 0 ? 0 : offset / limit + 1;
-
-    const paginationResponse: PaginationResponse = {
-      total_page: totalPage,
-      current_page: currentPage,
+    const paginationResponse = toPaginationResponse({
+      count: count,
       limit: limit,
       offset: offset,
-    };
+    });
 
     return {
       data: dataResponse,
