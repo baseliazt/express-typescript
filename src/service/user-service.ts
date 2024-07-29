@@ -5,6 +5,7 @@ import {
   CreateUserRequest,
   DeleteUserRequest,
   LoginUserRequest,
+  RefreshTokenUserRequest,
   toUserResponse,
   UpdateUserRequest,
   UserResponse,
@@ -12,10 +13,8 @@ import {
 import { UserValidation } from "../validation";
 import { Validation } from "../validation/validation";
 import bcrypt from "bcrypt";
-import { v4 as uuidV4 } from "uuid";
 import jwt from "jsonwebtoken";
-import { logger } from "../application/logging";
-import { setTokenPayload, UserToken } from "../type";
+import { setTokenPayload, UserRequest } from "../type";
 
 export class UserService {
   static async register(request: CreateUserRequest): Promise<UserResponse> {
@@ -65,13 +64,21 @@ export class UserService {
       throw new ResponseError(401, "Username or password is wrong");
     }
 
-    const secretKey = process.env.JWT_SECRET_KEY ?? "";
+    const secretKey = process.env.JWT_SECRET_KEY_TOKEN ?? "";
 
     const token = await jwt.sign(
       setTokenPayload({ username: user.username }),
       secretKey,
       {
-        expiresIn: "1m",
+        expiresIn: "1h",
+      }
+    );
+
+    const refreshToken = await jwt.sign(
+      setTokenPayload({ username: user.username }),
+      secretKey,
+      {
+        expiresIn: "7d",
       }
     );
 
@@ -80,12 +87,14 @@ export class UserService {
         username: user.username,
       },
       data: {
-        token,
+        token: refreshToken,
       },
     });
 
     const response = toUserResponse(user);
+
     response.token = token;
+    response.refreshToken = refreshToken;
 
     return response;
   }
@@ -151,5 +160,35 @@ export class UserService {
     });
 
     return toUserResponse(response);
+  }
+
+  static async refreshToken(
+    user: User,
+    req: RefreshTokenUserRequest
+  ): Promise<UserResponse> {
+    const secretKey = process.env.JWT_SECRET_KEY_TOKEN ?? "";
+    try {
+      await jwt.verify(req.refresh_token, secretKey);
+      const token = await jwt.sign(
+        setTokenPayload({ username: user.username }),
+        secretKey,
+        {
+          expiresIn: "1d",
+        }
+      );
+
+      const response = await prismaClient.user.update({
+        where: {
+          username: user.username,
+        },
+        data: {
+          ...user,
+          token: token,
+        },
+      });
+      return toUserResponse(response);
+    } catch (err) {
+      throw new ResponseError(401, "Unauthorized");
+    }
   }
 }

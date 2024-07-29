@@ -1,8 +1,8 @@
 import { Response, NextFunction } from "express";
 import { prismaClient } from "../application/database";
 import { UserRequest } from "../type";
-import { logger } from "../application/logging";
 import jwt from "jsonwebtoken";
+import { JWTUser } from "../type";
 
 export const authMiddleware = async (
   req: UserRequest,
@@ -16,37 +16,51 @@ export const authMiddleware = async (
     });
     return;
   }
-  logger.info(`bearer ${bearerToken}`);
+  if (!bearerToken.includes("Bearer ")) {
+    res.status(401).json({
+      errors: "Unauthorized",
+    });
+    return;
+  }
+
   const token = bearerToken.replace("Bearer ", "");
 
   if (token) {
-    const user = await prismaClient.user.findFirst({
-      where: {
-        token: token,
-      },
-    });
-    logger.info(`user: ${JSON.stringify(user)}`);
-    if (user) {
-      const secretKey = process.env.JWT_SECRET_KEY ?? "";
-      await jwt.verify(token, secretKey, (err: any, jwtUser: any) => {
-        if (err) {
-          res.status(401).json({
-            errors: "Unauthorized",
-          });
-          return;
-        }
-        req.user = user;
-        next();
-      });
-    } else {
-      res.status(401).json({
+    let username: string = "";
+    const secretKey = process.env.JWT_SECRET_KEY_TOKEN ?? "";
+    try {
+      const jwtUser = (await jwt.verify(token, secretKey)) as JWTUser;
+      username = jwtUser.username;
+    } catch (err) {
+      return res.status(401).json({
         errors: "Unauthorized",
       });
-      return;
     }
+
+    try {
+      const user = await prismaClient.user.findFirst({
+        where: {
+          username: username,
+        },
+      });
+      console.log("ini user", user);
+      if (user) {
+        req.user = user;
+        next();
+      } else {
+        return res.status(401).json({
+          errors: "Unauthorized",
+        });
+      }
+    } catch (err) {
+      return res.status(401).json({
+        errors: "Unauthorized",
+      });
+    }
+  } else {
+    res.status(401).json({
+      errors: "Unauthorized",
+    });
+    return;
   }
-  res.status(401).json({
-    errors: "Unauthorized",
-  });
-  return;
 };

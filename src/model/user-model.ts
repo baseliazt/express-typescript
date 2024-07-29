@@ -4,6 +4,7 @@ export type UserResponse = {
   username: string;
   name: string;
   token?: string;
+  refreshToken?: string;
 };
 
 export type CreateUserRequest = {
@@ -24,6 +25,10 @@ export type UpdateUserRequest = {
 
 export type DeleteUserRequest = {
   username: string;
+};
+
+export type RefreshTokenUserRequest = {
+  refresh_token: string;
 };
 
 export type LogoutUserRequest = {};

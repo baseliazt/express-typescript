@@ -11,7 +11,6 @@ export const errorMiddleware = async (
 ) => {
   const test = error instanceof ZodError;
 
-  logger.info("zoderror", test);
   if (error instanceof ZodError) {
     res.status(400).json({
       errors: `Validation Error : ${JSON.stringify(error)}`,
