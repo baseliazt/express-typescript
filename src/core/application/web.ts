@@ -6,8 +6,6 @@ import mergedSwagger from "./mergedSwagger";
 
 export const web = express();
 
-// const specs = swaggerJsdoc(swaggerOptions);
-
 web.use("/docs", swaggerUi.serve, swaggerUi.setup(mergedSwagger));
 
 web.use(express.json());

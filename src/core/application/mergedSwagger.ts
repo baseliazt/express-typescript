@@ -27,5 +27,7 @@ const swaggerExtensions = YAML.load(
 
 // Merge YAML files
 const mergedSwagger = merge<SwaggerDocument>(swaggerBase, swaggerExtensions);
+mergedSwagger.info.title = "Learn Typescript API";
+mergedSwagger.info.description = "All created resource";
 
 export default mergedSwagger;
