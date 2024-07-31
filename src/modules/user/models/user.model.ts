@@ -14,6 +14,7 @@ export type CreateUserRequest = {
   password: string;
 };
 
+
 export type LoginUserRequest = {
   username: string;
   password: string;

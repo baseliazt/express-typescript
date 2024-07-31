@@ -1,0 +1,30 @@
+paths:
+  /api/users:
+    post:
+      summary: Registration for new users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: 'name'
+                name:
+                  type: string
+                  example: 'username'
+                password:
+                  type: string
+                  example: 'password'
+        required: true
+      responses:
+        '201':
+          description: Message created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
